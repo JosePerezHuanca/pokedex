@@ -30,7 +30,7 @@ class SearchDialog(wx.Dialog):
 
         labelInfo = wx.StaticText(self.panel, label='Info')
         caja.Add(labelInfo, 0, wx.ALL, 5)
-        self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_RICH2)
+        self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_DONTWRAP);
         caja.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5)
 
         self.panel.SetSizer(caja)
@@ -111,7 +111,6 @@ class SearchDialog(wx.Dialog):
     def infoMethod(self, event):
         selected_index = self.resultsList.GetFirstSelected();
         if selected_index != -1:
-            print(self.search_results[selected_index]);
             urlPokemon = self.search_results[selected_index][2];
             response = requests.get(urlPokemon);
             if response.status_code == 200:
@@ -129,5 +128,5 @@ class SearchDialog(wx.Dialog):
                 typesInfo = "Type:\n";
                 for type in data['types']:
                     typesInfo += f"{type['type']['name']}\n";
-                fullInfo = info + "\n" + typesInfo + "\n" + abilitiesInfo + "\n" + statsInfo + "\n" + movesInfo;
+                fullInfo = info + "\n" + typesInfo + "\n" + abilitiesInfo + "\n" + statsInfo + "\n" + movesInfo+ "\n";
                 self.infoText.SetValue(fullInfo);
