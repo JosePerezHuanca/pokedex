@@ -1,12 +1,17 @@
-#importar todo
 import wx
+import wx.lib.mixins.listctrl as listmix
+from sound_manager import SoundManager
 import requests
 import json
 import os
-from search import SearchDialog;
 from getData import updatePokemonData
+from search import SearchDialog
 
-class MainWindow(wx.Frame):
+# Instancia del SoundManager
+sound_manager = SoundManager()
+sound_manager.play_open_sound()  # Reproducir el sonido al abrir el programa
+
+class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
     def __init__(self, *args, **kw):
         super(MainWindow, self).__init__(*args, **kw)
         self.panel = wx.Panel(self)
@@ -53,6 +58,9 @@ class MainWindow(wx.Frame):
         self.context_menu = wx.Menu()
         exportar_item = self.context_menu.Append(wx.ID_ANY, "&Exportar a TXT", "Exportar Pokemon a TXT")
         self.Bind(wx.EVT_MENU, self.exportarTxt, exportar_item)
+
+        # Configurar eventos de la lista para reproducción de sonido al seleccionar
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, self.listaResultados)
 
     def clear_and_generate(self, event):
         for child in self.panel.GetChildren():
@@ -142,6 +150,10 @@ class MainWindow(wx.Frame):
                 nombre_archivo = f"{self.pokemonsList[selected]['name']}_info.txt"
                 with open(nombre_archivo, 'w') as file:
                     file.write(self.infoText.GetValue())
+
+    def onItemSelected(self, event):
+        # Reproduce el sonido al seleccionar un elemento en la lista
+        sound_manager.play_select_sound()
 
 app = wx.App()
 mainwindow = MainWindow(None, title='Pokedex')
