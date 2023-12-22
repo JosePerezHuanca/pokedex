@@ -1,8 +1,8 @@
-#Pokedex
+# Pokedex
 
 Programa que obtiene datos de [pokeapi.co](https://pokeapi.co/)
 
-#Requisitos:
+## Requisitos:
 
 - Python3
 - Se recomienda crear un entorno virtual.
