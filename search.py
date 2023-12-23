@@ -16,9 +16,11 @@ class SearchDialog(wx.Dialog):
         self.searchLabel = wx.StaticText(self.panel, label='Buscar Pokemon:');
         caja.Add(self.searchLabel, 0, wx.ALL, 5);
         self.searchText = wx.TextCtrl(self.panel);
-        self.searchText.Bind(wx.EVT_TEXT, self.searchPokemon);
-        self.searchText.Bind(wx.EVT_KEY_DOWN, self.onKeyPress);
         caja.Add(self.searchText, 0, wx.ALL, 5);
+
+        self.searchButton=wx.Button(self.panel, label='search');
+        self.searchButton.Bind(wx.EVT_BUTTON, self.searchPokemon);
+        caja.Add(self.searchButton,0,wx.ALL,5);
 
         self.resultsList = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
         self.resultsList.InsertColumn(0, 'id');
@@ -41,34 +43,6 @@ class SearchDialog(wx.Dialog):
         self.search_results = [];
         self.consultaMethod();
 
-    def clear_and_generate(self, event):
-        for child in self.panel.GetChildren():
-            child.Destroy();
-
-        self.searchLabel = wx.StaticText(self.panel, label='Buscar Pokemon:');
-        self.searchText = wx.TextCtrl(self.panel);
-        self.searchText.Bind(wx.EVT_TEXT, self.searchPokemon);
-        self.searchText.Bind(wx.EVT_KEY_DOWN, self.onKeyPress);
-        self.resultsList = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
-        self.resultsList.InsertColumn(0, 'id');
-        self.resultsList.InsertColumn(1, 'pokemon');
-        self.resultsList.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onItemActivated);
-        self.infoButton = wx.Button(self.panel, label='Info Pokemon');
-        self.infoButton.Bind(wx.EVT_BUTTON, self.infoMethod);
-        labelInfo = wx.StaticText(self.panel, label='Info');
-        self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_RICH2);
-
-        sizer = wx.BoxSizer(wx.VERTICAL);
-        sizer.Add(self.searchLabel, 0, wx.ALL, 5);
-        sizer.Add(self.searchText, 0, wx.ALL, 5);
-        sizer.Add(self.resultsList, 0, wx.ALL, 5);
-        sizer.Add(self.infoButton, 0, wx.ALL, 5);
-        sizer.Add(labelInfo, 0, wx.ALL, 5);
-        sizer.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
-        self.panel.SetSizerAndFit(sizer);
-
-        self.Layout();
-
     def consultaMethod(self):
         try:
             if not os.path.exists('pokemon.json'):
@@ -86,30 +60,12 @@ class SearchDialog(wx.Dialog):
         self.updateResultsList();
 
     def updateResultsList(self):
+        self.infoButton.Enable(False);
         self.resultsList.DeleteAllItems();
         for ids, pokemon_name, url in self.search_results:
             self.resultsList.InsertItem(ids, pokemon_name);
+            self.infoButton.Enable(True);
 
-    def onKeyPress(self, event):
-        key_code = event.GetKeyCode();
-        if key_code == wx.WXK_RETURN:
-            self.onAccept(None);
-        else:
-            event.Skip();
-
-    def onItemActivated(self, event):
-        selected_index = event.GetIndex();
-        self.parent.listaResultados.Select(selected_index);
-        self.parent.listaResultados.EnsureVisible(selected_index);
-        self.EndModal(wx.ID_OK);
-
-    def onAccept(self, event):
-        if self.resultsList.GetItemCount() > 0:
-            selected_index = self.resultsList.GetFirstSelected();
-            self.parent.listaResultados.Select(selected_index);
-            self.parent.listaResultados.EnsureVisible(selected_index);
-        self.EndModal(wx.ID_OK);
-        self.parent.consultaMethod(None)
 
     def infoMethod(self, event):
         selected_index = self.resultsList.GetFirstSelected();
@@ -118,7 +74,8 @@ class SearchDialog(wx.Dialog):
             response = requests.get(urlPokemon);
             if response.status_code == 200:
                 data = response.json();
-                info = f"Name: {data['name']}\nBase experience: {data['base_experience']}\n";
+                info = f"Name: {data['name']}\nId: {data['id']}\nHeight: {data['height']}\nWeight: {data['weight']}\n";
+                
                 abilitiesInfo = "Abilities:\n";
                 for abilitie in data['abilities']:
                     abilitiesInfo += f"{abilitie['ability']['name']}\n";
