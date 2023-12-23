@@ -132,11 +132,9 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
             wx.MessageBox(str(e));
 
     def mostrarBuscar(self, event):
-        #self.clear_and_generate(None);
         dlg = SearchDialog(self, title="Buscar Pokemon");
         dlg.ShowModal();
         dlg.Destroy();
-        #self.consultaMethod(None);
 
     def OnExit(self, event):
         self.Close();
