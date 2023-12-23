@@ -113,7 +113,7 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
                 response = requests.get(urlPokemon);
                 if response.status_code == 200:
                     data = response.json();
-                    info = f"Name: {data['name']}\nBase experience: {data['base_experience']}\n";
+                    info = f"Name: {data['name']}\nId: {data['id']}\nHeight: {data['height']}\nWeight: {data['weight']}\n";
                     abilitiesInfo = "Abilities:\n";
                     for abilitie in data['abilities']:
                         abilitiesInfo += f"{abilitie['ability']['name']}\n";
@@ -136,7 +136,7 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         dlg = SearchDialog(self, title="Buscar Pokemon");
         dlg.ShowModal();
         dlg.Destroy();
-        self.consultaMethod(None);
+        #self.consultaMethod(None);
 
     def OnExit(self, event):
         self.Close();
