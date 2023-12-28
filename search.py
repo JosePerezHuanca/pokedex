@@ -13,7 +13,7 @@ class SearchDialog(wx.Dialog):
         self.panel = wx.Panel(self);
         caja = wx.BoxSizer(wx.VERTICAL);
 
-        self.searchLabel = wx.StaticText(self.panel, label='Buscar Pokemon:');
+        self.searchLabel = wx.StaticText(self.panel, label='Search Pokemon:');
         caja.Add(self.searchLabel, 0, wx.ALL, 5);
         self.searchText = wx.TextCtrl(self.panel);
         caja.Add(self.searchText, 0, wx.ALL, 5);
@@ -25,6 +25,7 @@ class SearchDialog(wx.Dialog):
         self.resultsList = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
         self.resultsList.InsertColumn(0, 'id');
         self.resultsList.InsertColumn(1, 'pokemon');
+
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, self.resultsList);
         caja.Add(self.resultsList, 0, wx.ALL, 5);
 
@@ -36,6 +37,10 @@ class SearchDialog(wx.Dialog):
         caja.Add(labelInfo, 0, wx.ALL, 5);
         self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_DONTWRAP);
         caja.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
+
+        self.closeButton=wx.Button(self.panel,label='Close');
+        self.closeButton.Bind(wx.EVT_BUTTON, self.closeMethod);
+        caja.Add(self.closeButton,0,wx.ALL,5);
 
         self.panel.SetSizer(caja);
         self.urls = [];
@@ -75,7 +80,6 @@ class SearchDialog(wx.Dialog):
             if response.status_code == 200:
                 data = response.json();
                 info = f"Name: {data['name']}\nId: {data['id']}\nHeight: {data['height']}\nWeight: {data['weight']}\n";
-                
                 abilitiesInfo = "Abilities:\n";
                 for abilitie in data['abilities']:
                     abilitiesInfo += f"{abilitie['ability']['name']}\n";
@@ -90,6 +94,9 @@ class SearchDialog(wx.Dialog):
                     typesInfo += f"{type['type']['name']}\n";
                 fullInfo = info + "\n" + typesInfo + "\n" + abilitiesInfo + "\n" + statsInfo + "\n" + movesInfo+ "\n";
                 self.infoText.SetValue(fullInfo);
+
+    def closeMethod(self,event):
+        self.EndModal(wx.ID_CLOSE);
 
     def onItemSelected(self, event):
         sound_manager.play_select_sound();

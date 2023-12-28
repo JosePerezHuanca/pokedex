@@ -11,6 +11,9 @@ from search import SearchDialog;
 sound_manager = SoundManager();
 sound_manager.play_open_sound()  # Reproducir el sonido al abrir el programa
 
+accelerator=wx.AcceleratorEntry();
+
+
 class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
     def __init__(self, *args, **kw):
         super(MainWindow, self).__init__(*args, **kw);
@@ -22,6 +25,7 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         self.listaResultados = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
         self.listaResultados.InsertColumn(0, 'id');
         self.listaResultados.InsertColumn(1, 'pokemon');
+        self.listaResultados.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected);
         self.listaResultados.Bind(wx.EVT_CONTEXT_MENU, self.showContextMenu);
         caja.Add(self.listaResultados, 0, wx.ALL, 5);
 
@@ -34,55 +38,23 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_DONTWRAP);
         caja.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
 
+        self.searchButton=wx.Button(self.panel,label='Search');
+        self.searchButton.Bind(wx.EVT_BUTTON, self.mostrarBuscar);
+        accelerator.Set(wx.ACCEL_CTRL,ord('F'), self.searchButton.GetId());
+        self.SetAcceleratorTable(wx.AcceleratorTable([accelerator]));
+        caja.Add(self.searchButton,0,wx.ALL,5);
+
         self.panel.SetSizer(caja);
         self.urls = [];
         self.pokemonsList = [];
         self.consultaMethod(None);
 
-        # Configurar menú
-        menubar = wx.MenuBar();
-        fileMenu = wx.Menu();
-
-        # Agregar elementos al menú
-        buscar_item = fileMenu.Append(wx.ID_ANY, "&Buscar\tCtrl+F", "Buscar Pokemon");
-        salir_item = fileMenu.Append(wx.ID_EXIT, "&Salir\tAlt+F4", "Salir de la aplicación");
-
-        # Asociar eventos a los elementos del menú
-        self.Bind(wx.EVT_MENU, self.mostrarBuscar, buscar_item);
-        self.Bind(wx.EVT_MENU, self.OnExit, salir_item);
-
-        menubar.Append(fileMenu, "&Archivo");
-        self.SetMenuBar(menubar);
-
+        
         # Configurar menú contextual
         self.context_menu = wx.Menu();
         exportar_item = self.context_menu.Append(wx.ID_ANY, "&Exportar a TXT", "Exportar Pokemon a TXT");
         self.Bind(wx.EVT_MENU, self.exportarTxt, exportar_item);
 
-        # Configurar eventos de la lista para reproducción de sonido al seleccionar
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, self.listaResultados);
-
-    def clear_and_generate(self, event):
-        for child in self.panel.GetChildren():
-            child.Destroy();
-
-        labelLista = wx.StaticText(self.panel, label='Pokemons');
-        self.listaResultados = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
-        self.listaResultados.InsertColumn(0, 'id');
-        self.listaResultados.InsertColumn(1, 'pokemon');
-        self.listaResultados.Bind(wx.EVT_CONTEXT_MENU, self.showContextMenu);
-        self.infoButton = wx.Button(self.panel, label='Info pokemon');
-        self.infoButton.Bind(wx.EVT_BUTTON, self.infoMethod);
-        labelInfo = wx.StaticText(self.panel, label='Info');
-        self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_RICH2);
-
-        sizer = wx.BoxSizer(wx.VERTICAL);
-        sizer.Add(labelLista, 0, wx.ALL, 5);
-        sizer.Add(self.listaResultados, 0, wx.ALL, 5);
-        sizer.Add(self.infoButton, 0, wx.ALL, 5);
-        sizer.Add(labelInfo, 0, wx.ALL, 5);
-        sizer.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
-        self.panel.SetSizerAndFit(sizer);
 
         self.Layout();
 
@@ -132,7 +104,7 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
             wx.MessageBox(str(e));
 
     def mostrarBuscar(self, event):
-        dlg = SearchDialog(self, title="Buscar Pokemon");
+        dlg = SearchDialog(self, title="Search");
         dlg.ShowModal();
         dlg.Destroy();
 
