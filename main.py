@@ -29,22 +29,25 @@ class MainWindow(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         self.listaResultados.Bind(wx.EVT_CONTEXT_MENU, self.showContextMenu);
         caja.Add(self.listaResultados, 0, wx.ALL, 5);
 
+        caja2=wx.BoxSizer(wx.VERTICAL);
+
         self.infoButton = wx.Button(self.panel, label='Info pokemon');
         self.infoButton.Bind(wx.EVT_BUTTON, self.infoMethod);
-        caja.Add(self.infoButton, 0, wx.ALL, 5);
+        caja2.Add(self.infoButton, 0, wx.ALL | wx.Top, 5);
 
         labelInfo = wx.StaticText(self.panel, label='Info');
-        caja.Add(labelInfo, 0, wx.ALL, 5);
+        caja2.Add(labelInfo, 0, wx.ALL, 5);
         self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_DONTWRAP);
-        caja.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
+        caja2.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
 
         self.searchButton=wx.Button(self.panel,label='Search');
         self.searchButton.Bind(wx.EVT_BUTTON, self.mostrarBuscar);
         accelerator.Set(wx.ACCEL_CTRL,ord('F'), self.searchButton.GetId());
         self.SetAcceleratorTable(wx.AcceleratorTable([accelerator]));
-        caja.Add(self.searchButton,0,wx.ALL,5);
+        caja2.Add(self.searchButton,0,wx.ALL | wx.Bottom,5);
 
         self.panel.SetSizer(caja);
+        self.panel.SetSizer(caja2);
         self.urls = [];
         self.pokemonsList = [];
         self.consultaMethod(None);
