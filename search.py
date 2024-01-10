@@ -22,27 +22,34 @@ class SearchDialog(wx.Dialog):
         self.searchButton.Bind(wx.EVT_BUTTON, self.searchPokemon);
         caja.Add(self.searchButton,0,wx.ALL,5);
 
+        caja2 = wx.BoxSizer(wx.VERTICAL);
+
+
         self.resultsList = wx.ListCtrl(self.panel, style=wx.LC_SINGLE_SEL | wx.LC_REPORT);
         self.resultsList.InsertColumn(0, 'id');
         self.resultsList.InsertColumn(1, 'pokemon');
 
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, self.resultsList);
-        caja.Add(self.resultsList, 0, wx.ALL, 5);
+        caja2.Add(self.resultsList, 0, wx.ALL, 5);
+
+        caja3 = wx.BoxSizer(wx.VERTICAL);
 
         self.infoButton = wx.Button(self.panel, label='Info Pokemon');
         self.infoButton.Bind(wx.EVT_BUTTON, self.infoMethod);
-        caja.Add(self.infoButton, 0, wx.ALL, 5);
+        caja3.Add(self.infoButton, 0, wx.ALL, 5);
 
         labelInfo = wx.StaticText(self.panel, label='Info');
-        caja.Add(labelInfo, 0, wx.ALL, 5);
+        caja3.Add(labelInfo, 0, wx.ALL, 5);
         self.infoText = wx.TextCtrl(self.panel, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_DONTWRAP);
-        caja.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
+        caja3.Add(self.infoText, 1, wx.EXPAND | wx.ALL, 5);
 
         self.closeButton=wx.Button(self.panel,label='Close');
         self.closeButton.Bind(wx.EVT_BUTTON, self.closeMethod);
-        caja.Add(self.closeButton,0,wx.ALL,5);
+        caja3.Add(self.closeButton,0,wx.ALL,5);
 
         self.panel.SetSizer(caja);
+        self.panel.SetSizer(caja2);
+        self.panel.SetSizer(caja3);
         self.urls = [];
         self.pokemonsList = [];
         self.search_results = [];
